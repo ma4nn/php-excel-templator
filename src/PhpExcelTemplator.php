@@ -209,19 +209,18 @@ class PhpExcelTemplator
     protected static function clearTemplateVarsInSheet(Worksheet $sheet, array $templateVars, array $params): void
     {
         $paramKeys = array_keys($params);
-        foreach ($templateVars as $row_key => $row) {
-            foreach ($row as $col_key => $col_content) {
-                if ($col_content) {
-                    foreach ($paramKeys as $paramKey) {
-                        if (strpos($col_content, $paramKey) !== false) {
-                            $sheet->setCellValueExplicitByColumnAndRow(
-                                $col_key + 1,
-                                $row_key + 1,
-                                null,
-                                DataType::TYPE_NULL
-                            );
-                        }
+        foreach ($templateVars as $rowKey => $row) {
+            foreach ($row as $colKey => $colContent) {
+                if (! $colContent) {
+                    continue;
+                }
+
+                foreach ($paramKeys as $paramKey) {
+                    if (strpos($colContent, $paramKey) === false) {
+                        continue;
                     }
+
+                    $sheet->setCellValueExplicit([$colKey + 1, $rowKey + 1], null, DataType::TYPE_NULL);
                 }
             }
         }
